@@ -1,15 +1,28 @@
 import pandas as pd
-import pyodbc
+import ibm_db
+import ibm_db_dbi
 
-DB_DSN = "MOSSDB"
+# --- nastavenia DB ---
+DB_HOST = "MOSSDB"       # IP alebo hostname DB
+DB_PORT = "50000"
+DB_NAME = "ESO"
 DB_USER = "esoro"
 DB_PASSWORD = "esor4moss"
 
 def load_data(sql):
-    conn = pyodbc.connect(f"DSN={DB_DSN};UID={DB_USER};PWD={DB_PASSWORD}")
-    cursor = conn.cursor()
-    cursor.execute("SET SCHEMA ESO")  # nastavenie predvolenej schémy
-    conn.commit()
-    df = pd.read_sql(sql, conn)
-    conn.close()
+    conn_str = (
+        f"DATABASE={DB_NAME};"
+        f"HOSTNAME={DB_HOST};"
+        f"PORT={DB_PORT};"
+        f"PROTOCOL=TCPIP;"
+        f"UID={DB_USER};"
+        f"PWD={DB_PASSWORD};"
+    )
+    conn = ibm_db.connect(conn_str, "", "")
+    
+    # nastavenie predvolenej schémy
+    ibm_db.exec_immediate(conn, "SET CURRENT SCHEMA ESO")
+    
+    df = pd.read_sql(sql, ibm_db_dbi.Connection(conn))
+    ibm_db.close(conn)
     return df
