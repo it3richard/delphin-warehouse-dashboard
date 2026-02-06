@@ -1,0 +1,6 @@
+streamlit
+pandas
+sqlalchemy
+ibm-db
+ibm-db-sa
+streamlit-autorefresh
