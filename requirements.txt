@@ -1,5 +1,4 @@
 streamlit
-pyodbc
 pandas
 sqlalchemy
 ibm-db
